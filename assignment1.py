@@ -51,6 +51,8 @@ def array_sorter(arr: array):
 def firstloop(arr: array, k):
     length = len(arr)
 
+    # Since the array is sorted, we always set i=0 and j=z-1
+    # because neither i nor j can have a higher position in the array than k
     if k >= length:
         print("Nah 2x")
         return False
@@ -62,6 +64,9 @@ def secondloop(arr: array, i, j, k):
     if i >= j:
         return firstloop(arr, k+1)
 
+    # k is the target here, if i+j is smaller than k we
+    # need to increase i, if they are larger than k we need
+    # to decrease j instead. Loop this until i and j collide
     if arr[i]+arr[j] == arr[k]:
         print(arr[i], "+", arr[j], "=", arr[k])
         return True
