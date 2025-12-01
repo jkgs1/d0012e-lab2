@@ -33,15 +33,7 @@ def concat_arrays(arr1, arr2):
 
 
 def sortR(arr):
-    """Recursive sorting algorithm sortR.
-    
-    Assumptions:
-        - arr is a list of elements that can be compared with '>'.
-        - Theoretical analysis assumes n is divisible by 4 (e.g., n = 4^k),
-          but this implementation works for any n using floor division.
-    
-    Time complexity: Θ(n^3.82) where n = len(arr)
-    """
+
     n = len(arr)
     
     # Base case
