@@ -49,7 +49,7 @@ def z_finder(arr: array, z):
     if z >= len(arr):
         print("No solution found")
         return False
-    # Call hasher with the target value, aka z
+    # Call hasher with the target value = arr[z]
     if hasher(arr[z], arr, 0, {}):
         return True
     # If there is no solution for z, recursively call z_finder
