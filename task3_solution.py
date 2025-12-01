@@ -1,5 +1,4 @@
 def insertion_sort(arr, start, end):
-    """Insertion sort for subarray [start:end] inclusive."""
     i = start + 1
     while i <= end:
         key = arr[i]
@@ -12,7 +11,6 @@ def insertion_sort(arr, start, end):
 
 
 def copy_subarray(arr, start, end):
-    """Copy subarray [start:end] inclusive without built-in methods."""
     result = []
     i = start
     while i <= end:
@@ -22,10 +20,6 @@ def copy_subarray(arr, start, end):
 
 
 def concat_arrays(arr1, arr2):
-    """Concatenate two arrays without built-in methods.
-    
-    Simply appends arr2 to the end of arr1 (does not merge sorted arrays).
-    """
     result = []
     i = 0
     while i < len(arr1):
