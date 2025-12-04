@@ -10,132 +10,110 @@ def main():
         #print(b[i])
         print(a[i])
     test = worst_case_three(a,0,0,0)
-    #test2 = array_sorter(a)
-    #test3 = z_finder(a, 0)
-    test = findXYZ(a, 0,0,None)
+    test2 = worst_case_two(a, None, None, None, None, None)
 # ===========================================
 #               For O(n³)-time
 # ===========================================
-def worst_case_three(arr: array, i, j, k):
+def worst_case_three(arr: array, x, y, z):
     length = len(arr)
 
-    # If i hits the end there is no solution
-    if i >= length:
-        print("Nah 3x")
+    if x >= length:
+        print("No solution found")
         return False
 
-    # If j hits the end we move to the next i
-    if j >= length:
-        return worst_case_three(arr, i+1, i+1, 0)
+    if y >= length:
+        return worst_case_three(arr, x+1, x+1, 0)
 
-    # If k hits the end we move to the next j
-    if k >= length:
-        return worst_case_three(arr, i, j+1, 0)
+    if z >= length:
+        return worst_case_three(arr, x, y+1, 0)
 
-    if i != j and i != k and j != k:
-        if arr[i] + arr[j] == arr[k]:
-            print(arr[i], "+", arr[j], "=", arr[k])
+    if z != y and z != x and y != x:
+        if arr[x] + arr[y] == arr[z]:
+            print(arr[x], "+", arr[y], "=", arr[z])
             return True
 
-    # If none of the if statements is matched,
-    # continue the recursion with the next k
-    return worst_case_three(arr, i, j, k+1)
+    return worst_case_three(arr, x, y, z+1)
 
 # ===========================================
 #               For O(n²)-time
 # ===========================================
-def findXYZ(arr: array, z, i, hashmap):
+def worst_case_two(arr, x=None, y=None, z=None, l=None, r=None):
 
-    if z >= len(arr):
-        print("No solution found")
-        return False
+    n = len(arr)
 
-    # Init hashmap on every z iteration
-    if hashmap is None:
-        hashmap = {}
+    # -----------------------------------------------
+    # initial iteration to start sorting
+    # -----------------------------------------------
 
-    if i < len(arr):
-        complement = arr[z] - arr[i]
-        # Check if the compliment has been computed/ stored in a previous iteration
-        if complement in hashmap:
-            print(complement, "+", arr[i], "=", arr[z])
+    if x is None and y is None and z is None and l is None and r is None:
+        if n < 3:
+            print("No solution found")
+            return False
+        # start with sorting
+        return worst_case_two(arr, l=0, r=n-1)
+
+    # -----------------------------------------------
+    # sorting phase (presence of l/r signals sorting)
+    # -----------------------------------------------
+
+    if l is not None and r is not None:
+        # base case
+        if l >= r:
             return True
-        # If not, store current value for future iterations and recursively call function
-        # for every value i to the length of the array
-        hashmap[arr[i]] = i
-        return findXYZ(arr, z, i + 1, hashmap)
-    # When every value for i has been checked, call function again with next z-value
-    return findXYZ(arr, z+1, 0, None)
+        # divide
+        m = (l + r) // 2
+        worst_case_two(arr, l=l, r=m)
+        worst_case_two(arr, l=m+1, r=r)
+        # merge
+        i, j = l, m + 1
+        tmp = array("i")
+        # merge two sorted halves
+        while i <= m and j <= r:
+            if arr[i] <= arr[j]:
+                tmp.append(arr[i]); i += 1
+            else:
+                tmp.append(arr[j]); j += 1
+        # append remaining elements
+        while i <= m:
+            tmp.append(arr[i]); i += 1
+        while j <= r:
+            tmp.append(arr[j]); j += 1
+        arr[l:r+1] = tmp # copy back to original array
+        # after the top-level merge, start search
+        if l == 0 and r == n - 1:
+            return worst_case_two(arr, x=0, y=1, z=2)
+        return True
 
+    # -----------------------------------------------
+    # searching phase using two-pointer
+    # -----------------------------------------------
 
-
-# ===========================================
-#              "Illegal Solution"
-# ===========================================
-
-def z_finder(arr: array, z):
-    if z >= len(arr):
+    # init z, y
+    if z is None:
+        z = 2
+    if y is None:
+        y = z - 1
+    # base case: if z goes out of bounds, no solution
+    if z >= n:
         print("No solution found")
         return False
-    # Call hasher with the target value = arr[z]
-    if hasher(arr[z], arr, 0, {}):
+    # reset x, check y
+    if x is None:
+        x = 0
+    if x >= y:
+        # move to next z
+        return worst_case_two(arr, x=0, y=z-1, z=z + 1)
+
+    target = arr[x] + arr[y]
+    # either find match
+    if target == arr[z]:
+        print(arr[x], "+", arr[y], "=", arr[z])
         return True
-    # If there is no solution for z, recursively call z_finder
-    # with the next value for z
-    return z_finder(arr, z+1)
-
-
-def hasher(target: int, arr: array, i, hashmap):
-    if i >= len(arr):
-        return False
-
-    # We are looking for a value x that matches x + y = z
-    # x must be (target - arr[i])
-    complement = target - arr[i]
-    # Check if the compliment has been computed/ stored in a previous iteration
-    if complement in hashmap:
-        print(complement, "+", arr[i], "=", target)
-        return True
-    # If not, store current value for future iterations and recursively call hasher
-    # for every value i to the length of the array
-    hashmap[arr[i]]=i
-    return hasher(target, arr, i+1, hashmap)
-
-
-# ===========================================
-#              "Illegal Solution 2"
-# ===========================================
-def array_sorter(arr: array):
-    # Sorting the array, O(n*log(n))
-    sorted_array = sorted(arr)
-    return firstloop(sorted_array, 2)
-
-def firstloop(arr: array, k):
-    length = len(arr)
-
-    # Since the array is sorted, we always set i=0 and j=z-1
-    # because neither i nor j can have a higher position in the array than k
-    if k >= length:
-        print("Nah 2x")
-        return False
-    elif secondloop(arr, 0, k-1, k):
-        return True
-
-def secondloop(arr: array, i, j, k):
-
-    if i >= j:
-        return firstloop(arr, k+1)
-
-    # k is the target here, if i+j is smaller than k we
-    # need to increase i, if they are larger than k we need
-    # to decrease j instead. Loop this until i and j collide
-    if arr[i]+arr[j] == arr[k]:
-        print(arr[i], "+", arr[j], "=", arr[k])
-        return True
-    elif arr[i]+arr[j] < arr[k]:
-        return secondloop(arr, i+1, j, k)
-    elif arr[i]+arr[j] > arr[k]:
-        return secondloop(arr, i, j-1, k)
+    # or if target is smaller than z, move pointer x up
+    if target < arr[z]:
+        return worst_case_two(arr, x + 1, y, z)
+    # or if target is bigger than z, move pointer y down
+    return worst_case_two(arr, x, y - 1, z)
 
 
 
