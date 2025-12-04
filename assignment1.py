@@ -37,7 +37,7 @@ def worst_case_three(arr: array, x, y, z):
 # ===========================================
 #               For O(n²)-time
 # ===========================================
-def worst_case_two(arr, x=None, y=None, z=None, l=None, r=None):
+def worst_case_two(arr, x=None, y=None, z=None, l=None, r=False):
 
     n = len(arr)
 
@@ -45,47 +45,33 @@ def worst_case_two(arr, x=None, y=None, z=None, l=None, r=None):
     # initial iteration to start sorting
     # -----------------------------------------------
 
-    if x is None and y is None and z is None and l is None and r is None:
+    if x is None and y is None and z is None and l is None and not r:
         if n < 3:
             print("No solution found")
             return False
         # start with sorting
-        return worst_case_two(arr, l=0, r=n-1)
+        return worst_case_two(arr, l=1, r=True)
 
     # -----------------------------------------------
-    # sorting phase (presence of l/r signals sorting)
+    # sorting phase, incremental recursive insertion sort
     # -----------------------------------------------
 
-    if l is not None and r is not None:
-        # base case
-        if l >= r:
-            return True
-        # divide
-        m = (l + r) // 2
-        worst_case_two(arr, l=l, r=m)
-        worst_case_two(arr, l=m+1, r=r)
-        # merge
-        i, j = l, m + 1
-        tmp = array("i")
-        # merge two sorted halves
-        while i <= m and j <= r:
-            if arr[i] <= arr[j]:
-                tmp.append(arr[i]); i += 1
-            else:
-                tmp.append(arr[j]); j += 1
-        # append remaining elements
-        while i <= m:
-            tmp.append(arr[i]); i += 1
-        while j <= r:
-            tmp.append(arr[j]); j += 1
-        arr[l:r+1] = tmp # copy back to original array
-        # after the top-level merge, start search
-        if l == 0 and r == n - 1:
-            return worst_case_two(arr, x=0, y=1, z=2)
-        return True
+    if r:
+        # base case: if l goes out of bounds, start searching phase
+        if l >= n:
+            return worst_case_two(arr, x=0, y=None, z=None, l=None, r=False)
+        # inner loop: insertion sort step
+        key = arr[l]
+        j = l - 1
+        while j >= 0 and arr[j] > key:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+        # recursive call to sort next element
+        return worst_case_two(arr, l=l + 1, r=True)
 
     # -----------------------------------------------
-    # searching phase using two-pointer
+    # searching phase using two-pointer method
     # -----------------------------------------------
 
     # init z, y
