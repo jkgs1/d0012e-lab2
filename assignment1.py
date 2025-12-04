@@ -11,8 +11,8 @@ def main():
         print(a[i])
     test = worst_case_three(a,0,0,0)
     #test2 = array_sorter(a)
-    test3 = z_finder(a, 0)
-
+    #test3 = z_finder(a, 0)
+    test = findXYZ(a, 0,0,None)
 # ===========================================
 #               For O(n³)-time
 # ===========================================
@@ -43,6 +43,34 @@ def worst_case_three(arr: array, i, j, k):
 
 # ===========================================
 #               For O(n²)-time
+# ===========================================
+def findXYZ(arr: array, z, i, hashmap):
+
+    if z >= len(arr):
+        print("No solution found")
+        return False
+
+    # Init hashmap on every z iteration
+    if hashmap is None:
+        hashmap = {}
+
+    if i < len(arr):
+        complement = arr[z] - arr[i]
+        # Check if the compliment has been computed/ stored in a previous iteration
+        if complement in hashmap:
+            print(complement, "+", arr[i], "=", arr[z])
+            return True
+        # If not, store current value for future iterations and recursively call function
+        # for every value i to the length of the array
+        hashmap[arr[i]] = i
+        return findXYZ(arr, z, i + 1, hashmap)
+    # When every value for i has been checked, call function again with next z-value
+    return findXYZ(arr, z+1, 0, None)
+
+
+
+# ===========================================
+#              "Illegal Solution"
 # ===========================================
 
 def z_finder(arr: array, z):
@@ -75,7 +103,7 @@ def hasher(target: int, arr: array, i, hashmap):
 
 
 # ===========================================
-#              "Illegal Solution"
+#              "Illegal Solution 2"
 # ===========================================
 def array_sorter(arr: array):
     # Sorting the array, O(n*log(n))
