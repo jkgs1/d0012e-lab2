@@ -9,30 +9,34 @@ def main():
     for i in range(len(b)):
         #print(b[i])
         print(a[i])
-    test = worst_case_three(a,0,0,0)
-    test2 = worst_case_two(a, None, None, None, None, None)
+    test = findXYZ(a,0,0,None)
+    test2 = worst_case_two(a, None, None, None, None, False)
 # ===========================================
 #               For O(n³)-time
 # ===========================================
-def worst_case_three(arr: array, x, y, z):
-    length = len(arr)
+def findXYZ(arr: array, z, i, hashmap):
 
-    if x >= length:
+    if z >= len(arr):
         print("No solution found")
         return False
 
-    if y >= length:
-        return worst_case_three(arr, x+1, x+1, 0)
+    # Init hashmap on every z iteration
+    if hashmap is None:
+        hashmap = {}
 
-    if z >= length:
-        return worst_case_three(arr, x, y+1, 0)
-
-    if z != y and z != x and y != x:
-        if arr[x] + arr[y] == arr[z]:
-            print(arr[x], "+", arr[y], "=", arr[z])
+    if i < len(arr):
+        complement = arr[z] - arr[i]
+        # Check if the compliment has been computed/ stored in a previous iteration
+        # Also check for x + 0 = x
+        if complement in hashmap and hashmap[complement] != i and hashmap[complement] != z:
+            print(complement, "+", arr[i], "=", arr[z])
             return True
-
-    return worst_case_three(arr, x, y, z+1)
+        # If not, store current value for future iterations and recursively call function
+        # for every value i to the length of the array
+        hashmap[arr[i]] = i
+        return findXYZ(arr, z, i + 1, hashmap)
+    # When every value for i has been checked, call function again with next z-value
+    return findXYZ(arr, z+1, 0, None)
 
 # ===========================================
 #               For O(n²)-time
@@ -88,7 +92,7 @@ def worst_case_two(arr, x=None, y=None, z=None, l=None, r=False):
         x = 0
     if x >= y:
         # move to next z
-        return worst_case_two(arr, x=0, y=z-1, z=z + 1)
+        return worst_case_two(arr, x=0, y=z, z=z + 1)
 
     target = arr[x] + arr[y]
     # either find match
