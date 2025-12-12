@@ -5,12 +5,13 @@ def main():
     n=10
     min_val, max_val = 0, 100
     a = array("i", random.sample(range(min_val,max_val),n))
-    b = sorted(a)
+    b = array("i", (-1,0,1,98))
+    c = array("i", (3,2,1,17))
     for i in range(len(b)):
         #print(b[i])
         print(a[i])
-    test = findXYZ(a,0,0,None)
-    test2 = worst_case_two(a, None, None, None, None, False)
+    test = findXYZ(b,0,0,None)
+    test2 = worst_case_two(b, None, None, None, None, False)
 # ===========================================
 #               For O(n³)-time
 # ===========================================
@@ -28,7 +29,8 @@ def findXYZ(arr: array, z, i, hashmap):
         complement = arr[z] - arr[i]
         # Check if the compliment has been computed/ stored in a previous iteration
         # Also check for x + 0 = x
-        if complement in hashmap and hashmap[complement] != i and hashmap[complement] != z:
+        if complement in hashmap and hashmap[complement] != i and hashmap[complement] != z and i != z:
+            print("compliment:", complement, "i", i, "z", z)
             print(complement, "+", arr[i], "=", arr[z])
             return True
         # If not, store current value for future iterations and recursively call function
@@ -50,7 +52,7 @@ def worst_case_two(arr, x=None, y=None, z=None, l=None, r=False):
     # -----------------------------------------------
 
     if x is None and y is None and z is None and l is None and not r:
-        if n < 3:
+        if n < 4:
             print("No solution found")
             return False
         # start with sorting
@@ -83,6 +85,7 @@ def worst_case_two(arr, x=None, y=None, z=None, l=None, r=False):
         z = 2
     if y is None:
         y = z - 1
+
     # base case: if z goes out of bounds, no solution
     if z >= n:
         print("No solution found")
@@ -95,6 +98,15 @@ def worst_case_two(arr, x=None, y=None, z=None, l=None, r=False):
         return worst_case_two(arr, x=0, y=z, z=z + 1)
 
     target = arr[x] + arr[y]
+    negtarget = arr[z] - arr[x]
+
+    # scan upward from x+1 until y reaches n
+    if y < n:
+        if arr[y] == negtarget and y != z:
+            print(arr[x], "+", arr[y], "=", arr[z])
+            return True
+        return worst_case_two(arr, x, y + 1, z)
+
     # either find match
     if target == arr[z]:
         print(arr[x], "+", arr[y], "=", arr[z])
